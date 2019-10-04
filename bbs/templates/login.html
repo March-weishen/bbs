@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2">
+            <h2 class="text-center">欢迎登陆</h2>
+            <form action="" method="post" novalidate id="myform">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username_id">用户名：</label>
+                    <input type="text" id="username_id" class="form-control" name="username">
+                    <span style="color: red;"></span>
+                </div>
+                <div class="form-group">
+                    <label for="password_id">密码：</label>
+                    <input type="password" id="password_id" class="form-control" name="password">
+                    <span style="color: red;"></span>
+                </div>
+                <div class="form-group">
+                    <label for="valid_id">验证码：</label>
+                    <input type="text" id="valid_id" class="form-control" name="code">
+                    <span style="color: red;"></span>
+                    <img src="{% url 'get_image' %}" alt="" style="margin-top: 10px" id="image">
+                </div>
+                <input type='button' class="btn btn-primary pull-right" value="登陆" id="button">
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/static/jquery-3.4.0.min.js"></script>
+<script src="/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script>
+    $("#image").on('click', function () {
+        let url = $(this).attr('src');
+        url = url.substring(0, url.length);
+        $(this).attr('src', url)
+    });
+    $('#button').on('click', function () {
+        let formData = new FormData();
+        $.each($('#myform').serializeArray(), function (index, obj) {
+            console.log(obj);
+            formData.append(obj.name, obj.value)
+        });
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                if (data.code == 200) {
+                    location.href = data.msg
+
+                }
+                if (data.code == 402) {
+                    $('#username_id,#password_id').next().text(data.msg).parent().addClass('has-error')
+                }
+                if (data.code == 403) {
+                    $('#valid_id').next().text(data.msg).parent().addClass('has-error')
+                }
+            }
+        })
+    });
+    $('input').on('click', function () {
+        $(this).next().text('').parent().removeClass('has-error')
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2">
+            <h2 class="text-center">欢迎注册</h2>
+            <form action="" method="post" novalidate id="myform">
+                {% csrf_token %}
+                {% for foo in form_obj %}
+                    <div class="form-group">
+                        <label for="{{ foo.auto_id }}">{{ foo.label }}</label>
+                        {{ foo }}
+                        <span style="color: red;"></span>
+                    </div>
+                {% endfor %}
+                <div class="form-group">
+                    <label for="avatar_id">
+                        头像
+                        <img src="/static/avatar/1.jpg" alt="" id="image" style="margin-left: 30px;height: 100px">
+                    </label>
+                    <input type="file" id="avatar_id" class="hidden" name="image">
+                </div>
+                <input type='button' class="btn btn-primary pull-right" value="注册" id="button">
+            </form>
+        </div>
+    </div>
+</div>
+<script src="/static/jquery-3.4.0.min.js"></script>
+<script src="/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script>
+    $('#avatar_id').on('change', function () {
+        let img = $(this)[0].files[0];
+        let fileReader = new FileReader();
+        fileReader.readAsDataURL(img);
+        fileReader.onload = function () {
+            $('#image').attr('src', fileReader.result)
+        };
+    });
+    $('#button').on('click', function () {
+        let formData = new FormData();
+        $.each($('#myform').serializeArray(), function (index, obj) {
+            console.log(obj);
+            formData.append(obj.name, obj.value)
+        });
+        formData.append('image', $('#avatar_id')[0].files[0]);
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                if (data.code == 401) {
+                    $.each(data.msg, function (k, v) {
+                        console.log(k, v[0]);
+                        $('#id_' + k).next().text(v[0]).parent().addClass('has-error')
+                    })
+                } else {
+                    location.href = data.msg
+                }
+            }
+        })
+    });
+    $('input').on('click', function () {
+        $(this).next().text('').parent().removeClass('has-error')
+    })
+</script>
+</body>
+</html>

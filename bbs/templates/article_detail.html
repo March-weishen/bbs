@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <style>
+        #div_digg {
+            float: right;
+            margin-bottom: 10px;
+            margin-right: 30px;
+            font-size: 12px;
+            width: 125px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .diggit {
+            float: left;
+            width: 46px;
+            height: 52px;
+            background: url(/static/avatar/upup.gif) no-repeat;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 2px;
+            padding-top: 5px;
+        }
+
+        .buryit {
+            float: right;
+            margin-left: 20px;
+            width: 46px;
+            height: 52px;
+            background: url(/static/avatar/downdown.gif) no-repeat;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 2px;
+            padding-top: 5px;
+        }
+
+        .diggword {
+            margin-top: 5px;
+            margin-left: 0;
+            font-size: 12px;
+            color: #808080;
+        }
+
+        #div_digg .diggnum {
+            line-height: 1.5em !important;
+        }
+
+        .diggnum {
+            font-size: 14px;
+            color: #075db3;
+            font-family: Verdana;
+        }
+
+        .buryit {
+            float: right;
+            margin-left: 20px;
+            width: 46px;
+            height: 52px;
+            background: url(/static/avatar/downdown.gif) no-repeat;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 2px;
+            padding-top: 5px;
+        }
+
+        #div_digg .burynum {
+            line-height: 1.5em !important;
+        }
+
+        .burynum {
+            font-size: 14px;
+            color: #075db3;
+            font-family: Verdana;
+        }
+
+        .clear {
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">博客首页</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+                <li><a href="#">Link</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Dropdown <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <form class="navbar-form navbar-left">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                    <li><a href="/{{ request.user.blog.site_name }}/">{{ request.user.username }}</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">选项 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">修改密码</a></li>
+                            <li><a href="#">修改头像</a></li>
+                            <li><a href="#">后台管理</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="{% url 'logout' %}">注销</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">登陆</a></li>
+                    <li><a href="{% url 'register' %}">注册</a></li>
+                {% endif %}
+
+
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        {% load my_tag %}
+        {% left_menu username %}
+        <div class="col-md-9 col-lg-9">
+            <div class="media">
+                <div class="media-body">
+                    <h4 class="media-heading" style="margin-bottom: 10px">
+                        <a href="/{{ article.blog.site_name }}/article_detail/{{ article.id }}">{{ article.title }}</a>
+                    </h4>
+                    <p>{{ article.content }}</p>
+                </div>
+            </div>
+            <hr>
+            <div class="clearfix">
+                <div id="div_digg">
+                    <div class="diggit up-down">
+                        <span class="diggnum" id="digg_count">{{ article.up_num }}</span>
+                    </div>
+                    <div class="buryit up-down">
+                        <span class="burynum" id="bury_count">{{ article.down_num }}</span>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="diggword" id="error_msg" style="color: red;"></div>
+                </div>
+            </div>
+            {#            #1楼 2019-09-29 12:32 aijihua1314go#}
+            <h3>评论列表</h3>
+            <hr>
+            <div class="container-fluid">
+                <div class="row comment">
+                    {% for comment in comment_list %}
+                        <div class="col-md-12 col-lg-12">
+                            <div class="clearfix" style="margin-bottom: 10px">
+                                <div class="pull-left">
+                                    <span>#{{ forloop.counter }}楼   {{ comment.create_time|date:'Y-m-d' }} <a
+                                            href="/{{ comment.user.username }}/" >{{ comment.user.username }}</a></span>
+                                </div>
+                                <div class="pull-right">
+                                    <a href="#tbCommentBody" comment_id="{{ comment.id }}"  comment_user="{{ comment.user.username }}" class="rep">回复</a>
+                                </div>
+                            </div>
+                            <div style="margin: 10px 0">
+                                <p>{{ comment.content }}</p>
+                            </div>
+                            <hr>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% if request.user.is_authenticated %}
+                <div>
+                    <p>
+                        昵称：<input type="text" id="tbCommentAuthor" class="author" disabled="disabled" size="50"
+                                  value="{{ request.user.username }}">
+                    </p>
+                    <div class="commentbox_main">
+                        <label for="tbCommentBody" class="commentbox_title_left">评论内容:</label>
+                        <textarea id="tbCommentBody" class="comment_textarea form-control"
+                                  style="height: 200px"></textarea>
+                    </div>
+                    <div id="tip_comment2" style="color:Red;margin-top: 10px"></div>
+                    <div>
+                        <button id='id_submit' class="btn btn-primary" style="margin-top: 10px">提交评论</button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script src="/static/jquery-3.4.0.min.js"></script>
+<script src="/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script>
+    $('.up-down').on('click', function () {
+        var get_v = $(this).hasClass('diggit');
+        var $num = $(this).children();
+        $.ajax({
+            url: '{% url 'up_down' %}',
+            type: 'post',
+            data: {
+                'flag': get_v,
+                'article_id':{{ article.pk }},
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            success: function (data) {
+                if (data.code === 100) {
+                    n = $num.text();
+                    $num.text(Number(n) + 1);
+                    $('#error_msg').text(data.msg)
+                } else {
+                    $('#error_msg').html(data.msg)
+                }
+            }
+        })
+    });
+    $('#id_submit').on('click', function () {
+        var content = $('#tbCommentBody').val();
+        var parent_id = $(this).attr('comment_id');
+        $.ajax({
+            url: {% url 'comment' %},
+            type: 'post',
+            data: {'content': content, 'article_id': {{ article_id }}, 'csrfmiddlewaretoken': '{{ csrf_token }}', 'parent_id': parent_id},
+            success: function (data) {
+                var c = `<div class="col-md-12 col-lg-12">
+                            <div style="margin: 10px 0">
+                                <p class='test'>${content}</p>
+                            </div>
+                            <hr>
+                        </div>`;
+                $('.comment').append(c);
+                $('#tbCommentBody').val('');
+            }
+        })
+    });
+    $('.rep').on('click', function () {
+        var comment_content = '@' + $(this).attr('comment_user') + '\n';
+        $('#tbCommentBody').val(comment_content);
+    })
+</script>
+</body>
+</html>
